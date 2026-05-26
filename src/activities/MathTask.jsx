@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playCorrect, playWrong } from "../lib/sound";
 
 export default function MathTask({ onDone, level = 2 }) {
   const cfg = getLevelConfig("math", level);
@@ -87,7 +88,11 @@ export default function MathTask({ onDone, level = 2 }) {
             className={`opt-btn ${
               picked === o ? (correct ? "opt-right" : "opt-wrong") : ""
             }`}
-            onClick={() => setPicked(o)}
+            onClick={() => {
+              if (correct) return;
+              (o === data.answer ? playCorrect : playWrong)();
+              setPicked(o);
+            }}
           >
             {o}
           </button>

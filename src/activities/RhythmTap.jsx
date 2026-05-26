@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLevelConfig } from "../lib/levels";
+import { playTap, playWrong } from "../lib/sound";
 
 /* Bấm theo nhịp: ngôi sao sáng lên đều đặn, bé bấm đúng lúc nó sáng.
    Rèn chú ý duy trì (giữ tập trung đều trong thời gian dài). */
@@ -63,11 +64,13 @@ export default function RhythmTap({ onDone, level = 1 }) {
     if (phase !== "playing") return;
     if (windowRef.current && !tappedRef.current) {
       tappedRef.current = true;
+      playTap();
       setHits((h) => h + 1);
       setFeedback("good");
       setTimeout(() => setFeedback(null), 250);
     } else if (!windowRef.current) {
       // bấm sai lúc (chưa sáng) -> nhấp nháy báo
+      playWrong();
       setFeedback("early");
       setTimeout(() => setFeedback(null), 250);
     }
