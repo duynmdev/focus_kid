@@ -54,6 +54,20 @@ export default function EnglishTask({ onDone, level = 1 }) {
       };
     }
 
+    if (mode === "listen") {
+      // Chỉ nghe phát âm (không hiện chữ), chọn hình đúng
+      const picks = shuffle(ENGLISH_WORDS).slice(0, 3);
+      const target = picks[0];
+      return {
+        mode,
+        prompt: "",
+        promptKind: "audio",
+        question: "Nghe từ rồi chọn hình đúng nhé! 🔊",
+        options: shuffle(picks).map((w) => ({ label: w.emoji, val: w.word })),
+        answer: target.word,
+      };
+    }
+
     // word2pic: cho từ, chọn hình đúng
     const picks = shuffle(ENGLISH_WORDS).slice(0, 3);
     const target = picks[0];
@@ -70,8 +84,9 @@ export default function EnglishTask({ onDone, level = 1 }) {
   const [picked, setPicked] = useState(null);
   const correct = picked === data.answer;
 
-  // Từ/chữ tiếng Anh cần đọc. pic2word có đề là emoji nên đọc đáp án (từ); còn lại đọc đề bài.
-  const spoken = data.mode === "pic2word" ? data.answer : data.prompt;
+  // Từ/chữ tiếng Anh cần đọc. pic2word & listen có đề là hình/âm nên đọc đáp án (từ); còn lại đọc đề.
+  const spoken =
+    data.mode === "pic2word" || data.mode === "listen" ? data.answer : data.prompt;
 
   // Tự đọc đề khi xuất hiện — trừ pic2word (đề là emoji, đọc ra sẽ lộ đáp án).
   useEffect(() => {
@@ -103,15 +118,28 @@ export default function EnglishTask({ onDone, level = 1 }) {
       <p className="task-instruction">{data.question}</p>
 
       <div className="en-prompt">
-        <span className={`en-${data.promptKind}`}>{data.prompt}</span>
-        <button
-          className="en-speak"
-          onClick={() => speak(spoken)}
-          aria-label="Nghe phát âm"
-          title="Nghe lại"
-        >
-          🔊
-        </button>
+        {data.promptKind === "audio" ? (
+          <button
+            className="en-speak big"
+            onClick={() => speak(spoken)}
+            aria-label="Nghe phát âm"
+            title="Nghe lại"
+          >
+            🔊
+          </button>
+        ) : (
+          <>
+            <span className={`en-${data.promptKind}`}>{data.prompt}</span>
+            <button
+              className="en-speak"
+              onClick={() => speak(spoken)}
+              aria-label="Nghe phát âm"
+              title="Nghe lại"
+            >
+              🔊
+            </button>
+          </>
+        )}
       </div>
 
       <div className={`en-options ${data.promptKind === "bigword" ? "wide" : ""}`}>
@@ -124,7 +152,7 @@ export default function EnglishTask({ onDone, level = 1 }) {
                   ? "en-right"
                   : "en-wrong"
                 : ""
-            } ${o.label.length === 1 || data.mode.includes("pic") || data.mode === "word2pic" ? "" : "en-opt-word"}`}
+            } ${o.label.length === 1 || data.mode.includes("pic") || data.mode === "word2pic" || data.mode === "listen" ? "" : "en-opt-word"}`}
             onClick={() => choose(o.val)}
           >
             {o.label}

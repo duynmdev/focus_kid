@@ -60,6 +60,21 @@ export const ENGLISH_WORDS = [
 
 export const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
+/* ---------- Hình học (dùng cho trò Hình học & Đổi luật) ---------- */
+/* key dùng làm class CSS (.shape-<key>); name là tên tiếng Việt; sides = số cạnh
+   (null nếu không hỏi số cạnh — tròn/sao). */
+export const SHAPES = [
+  { key: "circle", name: "tròn", sides: null },
+  { key: "square", name: "vuông", sides: 4 },
+  { key: "triangle", name: "tam giác", sides: 3 },
+  { key: "rect", name: "chữ nhật", sides: 4 },
+  { key: "star", name: "ngôi sao", sides: null },
+];
+
+export const SHAPE_COLORS = [
+  "#ff7a59", "#4ea8de", "#52c97a", "#ffb13c", "#9b6dff", "#ff85a1",
+];
+
 /* ---------- Sinh mê cung ngẫu nhiên (thuật toán DFS) ---------- */
 /* Trả về { grid, start, end }; grid n x n (n lẻ), 0=đường 1=tường */
 export function generateMaze(n) {
