@@ -28,6 +28,7 @@ import {
   playLevelUp,
 } from "./lib/sound";
 
+import Confetti from "./components/Confetti";
 import ConnectDots from "./activities/ConnectDots";
 import Maze from "./activities/Maze";
 import CountSort from "./activities/CountSort";
@@ -38,6 +39,10 @@ import MemoryFind from "./activities/MemoryFind";
 import GoNoGo from "./activities/GoNoGo";
 import SearchTarget from "./activities/SearchTarget";
 import RhythmTap from "./activities/RhythmTap";
+import SequenceMemory from "./activities/SequenceMemory";
+import RuleSwitch from "./activities/RuleSwitch";
+import MemoryPairs from "./activities/MemoryPairs";
+import ShapeFind from "./activities/ShapeFind";
 
 /* Định nghĩa các loại hoạt động */
 const ACTIVITY_TYPES = {
@@ -49,21 +54,25 @@ const ACTIVITY_TYPES = {
   maze: { label: "Mê cung", icon: "🌀", Comp: Maze, skill: "Tập trung" },
   find: { label: "Tìm khác biệt", icon: "🔍", Comp: FindDifferent, skill: "Quan sát" },
   dots: { label: "Nối số", icon: "🔢", Comp: ConnectDots, skill: "Tập trung" },
+  sequence: { label: "Nhớ chuỗi", icon: "🎵", Comp: SequenceMemory, skill: "Tập trung" },
+  shift: { label: "Đổi luật", icon: "🔀", Comp: RuleSwitch, skill: "Tập trung" },
+  pairs: { label: "Ghép đôi", icon: "🧩", Comp: MemoryPairs, skill: "Tập trung" },
   // --- Nhóm KIẾN THỨC (phụ, đổi gió) ---
   count: { label: "Đếm & so sánh", icon: "🍓", Comp: CountSort, skill: "Quan sát" },
   math: { label: "Phép tính", icon: "🧮", Comp: MathTask, skill: "Tư duy toán" },
   english: { label: "Tiếng Anh", icon: "🔤", Comp: EnglishTask, skill: "Tiếng Anh" },
+  shapes: { label: "Hình học", icon: "🔷", Comp: ShapeFind, skill: "Quan sát" },
 };
 
 /* Một buổi học: ƯU TIÊN TẬP TRUNG.
    8 hoạt động: 6 trò rèn tập trung + 2 trò kiến thức (đổi gió).
    Chọn ngẫu nhiên để mỗi buổi khác nhau, nhưng giữ đúng tỷ lệ. */
-const KNOWLEDGE_POOL = ["math", "count", "english"];
+const KNOWLEDGE_POOL = ["math", "count", "english", "shapes"];
 
 function buildSession() {
   // 6 trò tập trung (ngẫu nhiên, ưu tiên 4 trò chuyên biệt mới)
   const core = ["memory", "gonogo", "search", "rhythm"]; // 4 trò chuyên biệt luôn có
-  const extraFocus = shuffle(["maze", "find", "dots"]).slice(0, 2); // thêm 2 trò
+  const extraFocus = shuffle(["maze", "find", "dots", "sequence", "shift", "pairs"]).slice(0, 2); // thêm 2 trò
   const knowledge = shuffle(KNOWLEDGE_POOL).slice(0, 2); // 2 trò kiến thức đổi gió
 
   // xen kẽ: tập trung nhiều, thỉnh thoảng chèn kiến thức
@@ -472,7 +481,7 @@ function Home({ child, stats, onPlay, onProgress, onParent, onSwitch, onRename }
       <div className="activity-preview">
         <p className="ap-title">🎯 Trọng tâm: rèn tập trung</p>
         <div className="ap-row">
-          {["memory", "gonogo", "search", "rhythm", "maze", "find", "dots"].map((k) => (
+          {["memory", "gonogo", "search", "rhythm", "sequence", "shift", "pairs", "maze", "find", "dots"].map((k) => (
             <div key={k} className="ap-chip">
               <span className="ap-emo">{ACTIVITY_TYPES[k].icon}</span>
               <span>{ACTIVITY_TYPES[k].label}</span>
@@ -481,7 +490,7 @@ function Home({ child, stats, onPlay, onProgress, onParent, onSwitch, onRename }
         </div>
         <p className="ap-title" style={{ marginTop: 14 }}>📚 Đổi gió: kiến thức</p>
         <div className="ap-row">
-          {["math", "count", "english"].map((k) => (
+          {["math", "count", "english", "shapes"].map((k) => (
             <div key={k} className="ap-chip ap-chip-alt">
               <span className="ap-emo">{ACTIVITY_TYPES[k].icon}</span>
               <span>{ACTIVITY_TYPES[k].label}</span>
@@ -498,10 +507,29 @@ function Session({ session, step, levels, onExit, onDone }) {
   const cur = session[step];
   const ActivityComp = cur.type.Comp;
   const level = levels[cur.typeKey] || 1;
+  const [confirmExit, setConfirmExit] = useState(false);
   return (
     <div className="screen session">
+      {confirmExit && (
+        <div className="confirm-overlay" onClick={() => setConfirmExit(false)}>
+          <div className="confirm-box" onClick={(e) => e.stopPropagation()}>
+            <p className="confirm-msg">
+              Thoát buổi học? 🤔<br />
+              Tiến trình buổi này sẽ không được lưu.
+            </p>
+            <div className="confirm-actions">
+              <button className="big-play small" onClick={() => setConfirmExit(false)}>
+                Tiếp tục học
+              </button>
+              <button className="ghost-btn" onClick={() => { playTap(); onExit(); }}>
+                Thoát
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="sess-top">
-        <button className="back-btn" onClick={onExit}>✕</button>
+        <button className="back-btn" onClick={() => { playTap(); setConfirmExit(true); }}>✕</button>
         <div className="progress-track">
           {session.map((_, i) => (
             <span
@@ -529,18 +557,26 @@ function Session({ session, step, levels, onExit, onDone }) {
 
 /* ============================================================ Result */
 function Result({ result, childName, earnedBadges, levelUps, onAgain, onHome }) {
+  const [showConfetti, setShowConfetti] = useState(true);
+
   // âm thanh khi vào màn kết quả: giai điệu hoàn thành + tiếng sao + fanfare lên cấp
   useEffect(() => {
     playComplete();
     playStar(result.stars);
-    if (levelUps.length > 0) {
-      const t = setTimeout(() => playLevelUp(), 1000);
-      return () => clearTimeout(t);
-    }
+    const cf = setTimeout(() => setShowConfetti(false), 2800); // tự gỡ confetti
+    const lv =
+      levelUps.length > 0 ? setTimeout(() => playLevelUp(), 1000) : null;
+    return () => {
+      clearTimeout(cf);
+      if (lv) clearTimeout(lv);
+    };
   }, []);
 
   return (
     <div className="screen result">
+      {showConfetti && (
+        <Confetti count={result.stars === 3 ? 64 : 40} emoji={result.stars === 3} />
+      )}
       <div className="result-card">
         <h2 className="result-title">Hoàn thành buổi học! 🎉</h2>
         <div className="stars-row">
@@ -772,10 +808,14 @@ const ACTIVITY_TYPES_META = {
   maze: { label: "Mê cung", icon: "🌀" },
   find: { label: "Tìm khác biệt", icon: "🔍" },
   dots: { label: "Nối số", icon: "🔢" },
+  sequence: { label: "Nhớ chuỗi", icon: "🎵" },
+  shift: { label: "Đổi luật", icon: "🔀" },
+  pairs: { label: "Ghép đôi", icon: "🧩" },
   // Nhóm kiến thức
   count: { label: "Đếm & so sánh", icon: "🍓" },
   math: { label: "Phép tính", icon: "🧮" },
   english: { label: "Tiếng Anh", icon: "🔤" },
+  shapes: { label: "Hình học", icon: "🔷" },
 };
 
 /* ---------- phụ ---------- */

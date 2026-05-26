@@ -71,12 +71,13 @@ export const LEVELS = {
 
   // 🔤 TIẾNG ANH — chữ cái, ghép hoa/thường, từ vựng theo hình
   english: {
-    maxLevel: 4,
+    maxLevel: 5,
     levels: {
       1: { label: "Nhận mặt chữ", mode: "letter", std: "Tiếng Anh — chữ cái" },
       2: { label: "Ghép hoa & thường", mode: "case", std: "Tiếng Anh — hoa/thường" },
       3: { label: "Hình → từ", mode: "pic2word", std: "Tiếng Anh — từ vựng" },
       4: { label: "Từ → hình", mode: "word2pic", std: "Tiếng Anh — đọc từ" },
+      5: { label: "Nghe và chọn hình", mode: "listen", std: "Tiếng Anh — nghe hiểu" },
     },
   },
 
@@ -95,7 +96,8 @@ export const LEVELS = {
   gonogo: {
     maxLevel: 4,
     levels: {
-      1: { label: "Chậm rãi", rounds: 10, intervalMs: 1800, noGoRate: 0.3, std: "Ức chế (Go/No-Go)" },
+      // NOTE: số tốc độ cấp 1 làm mềm cho bé mới; xem lại sau khi test bé thật.
+      1: { label: "Chậm rãi", rounds: 10, intervalMs: 2000, noGoRate: 0.3, std: "Ức chế (Go/No-Go)" },
       2: { label: "Vừa phải", rounds: 12, intervalMs: 1500, noGoRate: 0.35, std: "Ức chế (Go/No-Go)" },
       3: { label: "Nhanh", rounds: 14, intervalMs: 1200, noGoRate: 0.4, std: "Ức chế (Go/No-Go)" },
       4: { label: "Rất nhanh", rounds: 16, intervalMs: 1000, noGoRate: 0.45, std: "Ức chế (Go/No-Go)" },
@@ -117,10 +119,55 @@ export const LEVELS = {
   rhythm: {
     maxLevel: 4,
     levels: {
-      1: { label: "8 nhịp", taps: 8, intervalMs: 1400, std: "Chú ý duy trì" },
+      // NOTE: tốc độ cấp 1 làm mềm cho bé mới; xem lại sau khi test bé thật.
+      1: { label: "8 nhịp", taps: 8, intervalMs: 1600, std: "Chú ý duy trì" },
       2: { label: "12 nhịp", taps: 12, intervalMs: 1200, std: "Chú ý duy trì" },
       3: { label: "16 nhịp", taps: 16, intervalMs: 1100, std: "Chú ý duy trì" },
       4: { label: "20 nhịp", taps: 20, intervalMs: 1000, std: "Chú ý duy trì" },
+    },
+  },
+
+  // 🎵 NHỚ CHUỖI (Simon) — rèn TRÍ NHỚ LÀM VIỆC + chú ý duy trì
+  sequence: {
+    maxLevel: 4,
+    levels: {
+      1: { label: "Chuỗi tới 3", start: 2, target: 3, flashMs: 700, std: "Trí nhớ làm việc" },
+      2: { label: "Chuỗi tới 4", start: 2, target: 4, flashMs: 600, std: "Trí nhớ làm việc" },
+      3: { label: "Chuỗi tới 5", start: 2, target: 5, flashMs: 500, std: "Trí nhớ làm việc" },
+      4: { label: "Chuỗi tới 6", start: 3, target: 6, flashMs: 430, std: "Trí nhớ làm việc" },
+    },
+  },
+
+  // 🔀 ĐỔI LUẬT — rèn LINH HOẠT NHẬN THỨC (cognitive flexibility / set-shifting)
+  shift: {
+    maxLevel: 4,
+    levels: {
+      1: { label: "Ít đổi luật", trials: 6, switchEvery: 3, options: 2, std: "Linh hoạt nhận thức" },
+      2: { label: "Đổi thường hơn", trials: 8, switchEvery: 2, options: 2, std: "Linh hoạt nhận thức" },
+      3: { label: "3 lựa chọn", trials: 10, switchEvery: 2, options: 3, std: "Linh hoạt nhận thức" },
+      4: { label: "Đổi liên tục", trials: 10, switchEvery: 1, options: 3, std: "Linh hoạt nhận thức" },
+    },
+  },
+
+  // 🧩 GHÉP ĐÔI — lật tìm cặp, rèn trí nhớ vị trí
+  pairs: {
+    maxLevel: 4,
+    levels: {
+      1: { label: "3 cặp", pairs: 3, std: "Trí nhớ làm việc" },
+      2: { label: "4 cặp", pairs: 4, std: "Trí nhớ làm việc" },
+      3: { label: "6 cặp", pairs: 6, std: "Trí nhớ làm việc" },
+      4: { label: "8 cặp", pairs: 8, std: "Trí nhớ làm việc" },
+    },
+  },
+
+  // 🔷 HÌNH HỌC — nhận biết hình & số cạnh (Common Core K.G)
+  shapes: {
+    maxLevel: 4,
+    levels: {
+      1: { label: "3 hình cơ bản", shapesN: 3, options: 3, sides: false, std: "K.G.A.2" },
+      2: { label: "4 hình", shapesN: 4, options: 3, sides: false, std: "K.G.A.2" },
+      3: { label: "5 hình", shapesN: 5, options: 4, sides: false, std: "K.G.A.2" },
+      4: { label: "Đếm số cạnh", shapesN: 5, options: 3, sides: true, std: "K.G.B.4" },
     },
   },
 };
@@ -137,6 +184,10 @@ export const DEFAULT_LEVELS = {
   gonogo: 1,
   search: 1,
   rhythm: 1,
+  sequence: 1,
+  shift: 1,
+  pairs: 2, // ghép đôi 3 cặp hơi dễ, bắt đầu ở 4 cặp
+  shapes: 1,
 };
 
 /* Lấy cấu hình cấp hiện tại của một loại bài, có chặn biên */

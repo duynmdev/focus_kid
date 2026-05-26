@@ -137,6 +137,13 @@ export function playLevelUp() {
   melody([[392, 0.1], [523, 0.1], [659, 0.1], [784, 0.24]], "square", 0.11);
 }
 
+// Nốt cho từng ô trong trò Nhớ chuỗi (Simon): 4 ô = 4 cao độ.
+const PAD_NOTES = [392, 523, 659, 784]; // G4, C5, E5, G5
+export function playPad(i) {
+  if (!soundOn) return;
+  tone(PAD_NOTES[i % PAD_NOTES.length], 0, 0.32, "sine", 0.16);
+}
+
 /* ---------- Phát âm (Web Speech) ---------- */
 export function stopSpeech() {
   try {
