@@ -18,6 +18,15 @@ import {
   addSession,
   isSupabaseConfigured,
 } from "./lib/storage";
+import {
+  isSoundOn,
+  toggleSound,
+  subscribe as subscribeSound,
+  playTap,
+  playComplete,
+  playStar,
+  playLevelUp,
+} from "./lib/sound";
 
 import ConnectDots from "./activities/ConnectDots";
 import Maze from "./activities/Maze";
@@ -329,6 +338,7 @@ function ChildPicker({ children, error, onChoose, onAdded }) {
   return (
     <div className="screen picker">
       <header className="home-head">
+        <SoundToggle />
         <div className="logo-badge">🎒</div>
         <h1 className="title">Bé Vào Lớp 1</h1>
         <p className="subtitle">Ai sẽ học hôm nay?</p>
@@ -340,7 +350,7 @@ function ChildPicker({ children, error, onChoose, onAdded }) {
         <>
           <div className="child-list">
             {children.map((c) => (
-              <button key={c.id} className="child-card" onClick={() => onChoose(c)}>
+              <button key={c.id} className="child-card" onClick={() => { playTap(); onChoose(c); }}>
                 <span className="cc-avatar">{c.avatar}</span>
                 <span className="cc-name">{c.name}</span>
               </button>
@@ -398,6 +408,7 @@ function Home({ child, stats, onPlay, onProgress, onParent, onSwitch, onRename }
   return (
     <div className="screen home">
       <header className="home-head">
+        <SoundToggle />
         <button className="switch-btn" onClick={onSwitch}>🔄 Đổi bé</button>
         <div className="big-avatar">{child.avatar}</div>
         {editing ? (
@@ -442,17 +453,17 @@ function Home({ child, stats, onPlay, onProgress, onParent, onSwitch, onRename }
         </div>
       </div>
 
-      <button className="big-play" onClick={onPlay}>
+      <button className="big-play" onClick={() => { playTap(); onPlay(); }}>
         <span className="bp-icon">▶</span>
         Bắt đầu buổi học hôm nay
       </button>
 
       <div className="home-nav">
-        <button className="nav-card" onClick={onProgress}>
+        <button className="nav-card" onClick={() => { playTap(); onProgress(); }}>
           <span className="nc-icon">📈</span>
           <span>Tiến bộ của bé</span>
         </button>
-        <button className="nav-card" onClick={onParent}>
+        <button className="nav-card" onClick={() => { playTap(); onParent(); }}>
           <span className="nc-icon">👨‍👩‍👧</span>
           <span>Góc phụ huynh</span>
         </button>
@@ -518,6 +529,16 @@ function Session({ session, step, levels, onExit, onDone }) {
 
 /* ============================================================ Result */
 function Result({ result, childName, earnedBadges, levelUps, onAgain, onHome }) {
+  // âm thanh khi vào màn kết quả: giai điệu hoàn thành + tiếng sao + fanfare lên cấp
+  useEffect(() => {
+    playComplete();
+    playStar(result.stars);
+    if (levelUps.length > 0) {
+      const t = setTimeout(() => playLevelUp(), 1000);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
   return (
     <div className="screen result">
       <div className="result-card">
@@ -567,8 +588,8 @@ function Result({ result, childName, earnedBadges, levelUps, onAgain, onHome }) 
         )}
 
         <div className="result-actions">
-          <button className="big-play small" onClick={onAgain}>Học thêm buổi nữa</button>
-          <button className="ghost-btn" onClick={onHome}>Về trang chính</button>
+          <button className="big-play small" onClick={() => { playTap(); onAgain(); }}>Học thêm buổi nữa</button>
+          <button className="ghost-btn" onClick={() => { playTap(); onHome(); }}>Về trang chính</button>
         </div>
       </div>
     </div>
@@ -758,6 +779,21 @@ const ACTIVITY_TYPES_META = {
 };
 
 /* ---------- phụ ---------- */
+// Icon loa bật/tắt âm thanh. Dùng chung trạng thái từ lib/sound qua subscribe.
+function SoundToggle() {
+  const [on, setOn] = useState(isSoundOn());
+  useEffect(() => subscribeSound(setOn), []);
+  return (
+    <button
+      className="sound-toggle"
+      onClick={() => toggleSound()}
+      aria-label={on ? "Tắt âm thanh" : "Bật âm thanh"}
+      title={on ? "Tắt âm thanh" : "Bật âm thanh"}
+    >
+      {on ? "🔊" : "🔇"}
+    </button>
+  );
+}
 function ScreenHead({ title, onBack }) {
   return (
     <div className="screen-head">

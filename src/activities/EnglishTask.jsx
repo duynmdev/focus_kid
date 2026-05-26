@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle, ENGLISH_WORDS, ALPHABET } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { speak, playCorrect, playWrong } from "../lib/sound";
 
 export default function EnglishTask({ onDone, level = 1 }) {
   const cfg = getLevelConfig("english", level);
@@ -69,6 +70,16 @@ export default function EnglishTask({ onDone, level = 1 }) {
   const [picked, setPicked] = useState(null);
   const correct = picked === data.answer;
 
+  // Từ/chữ tiếng Anh cần đọc. pic2word có đề là emoji nên đọc đáp án (từ); còn lại đọc đề bài.
+  const spoken = data.mode === "pic2word" ? data.answer : data.prompt;
+
+  // Tự đọc đề khi xuất hiện — trừ pic2word (đề là emoji, đọc ra sẽ lộ đáp án).
+  useEffect(() => {
+    if (data.mode === "pic2word") return;
+    const t = setTimeout(() => speak(spoken), 350);
+    return () => clearTimeout(t);
+  }, [data]);
+
   useEffect(() => {
     if (correct) {
       const t = setTimeout(() => onDone(100), 700);
@@ -76,12 +87,31 @@ export default function EnglishTask({ onDone, level = 1 }) {
     }
   }, [correct]);
 
+  const choose = (val) => {
+    if (correct) return; // đã đúng rồi thì thôi
+    setPicked(val);
+    if (val === data.answer) {
+      playCorrect();
+      speak(spoken); // đọc lại từ đúng để bé nghe
+    } else {
+      playWrong();
+    }
+  };
+
   return (
     <div className="task-body">
       <p className="task-instruction">{data.question}</p>
 
       <div className="en-prompt">
         <span className={`en-${data.promptKind}`}>{data.prompt}</span>
+        <button
+          className="en-speak"
+          onClick={() => speak(spoken)}
+          aria-label="Nghe phát âm"
+          title="Nghe lại"
+        >
+          🔊
+        </button>
       </div>
 
       <div className={`en-options ${data.promptKind === "bigword" ? "wide" : ""}`}>
@@ -95,7 +125,7 @@ export default function EnglishTask({ onDone, level = 1 }) {
                   : "en-wrong"
                 : ""
             } ${o.label.length === 1 || data.mode.includes("pic") || data.mode === "word2pic" ? "" : "en-opt-word"}`}
-            onClick={() => setPicked(o.val)}
+            onClick={() => choose(o.val)}
           >
             {o.label}
           </button>

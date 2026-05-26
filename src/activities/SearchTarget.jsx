@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle, EMOJI } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playTap, playCorrect, playWrong } from "../lib/sound";
 
 /* Tìm giữa nhiễu: tìm TẤT CẢ các mục tiêu (vd 🍎) lẫn giữa nhiều thứ gây nhiễu.
    Rèn chú ý chọn lọc. */
@@ -31,6 +32,7 @@ export default function SearchTarget({ onDone, level = 1 }) {
 
   useEffect(() => {
     if (done) {
+      playCorrect();
       const t = setTimeout(() => onDone(100), 700);
       return () => clearTimeout(t);
     }
@@ -38,8 +40,10 @@ export default function SearchTarget({ onDone, level = 1 }) {
 
   const tap = (i) => {
     if (data.targetPos.has(i)) {
+      playTap();
       setFound((prev) => new Set(prev).add(i));
     } else {
+      playWrong();
       setWrong(i);
       setTimeout(() => setWrong(null), 400);
     }

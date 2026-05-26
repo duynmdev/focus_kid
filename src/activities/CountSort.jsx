@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle, EMOJI } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playCorrect, playWrong } from "../lib/sound";
 
 export default function CountSort({ onDone, level = 2 }) {
   const cfg = getLevelConfig("count", level);
@@ -70,7 +71,11 @@ export default function CountSort({ onDone, level = 2 }) {
               className={`compare-group ${
                 picked === i ? (correct ? "cg-right" : "cg-wrong") : ""
               }`}
-              onClick={() => setPicked(i)}
+              onClick={() => {
+                if (correct) return;
+                (i === data.answer ? playCorrect : playWrong)();
+                setPicked(i);
+              }}
             >
               <div className="cg-items">
                 {Array(g.n)
@@ -107,7 +112,11 @@ export default function CountSort({ onDone, level = 2 }) {
             className={`opt-btn ${
               picked === o ? (correct ? "opt-right" : "opt-wrong") : ""
             }`}
-            onClick={() => setPicked(o)}
+            onClick={() => {
+              if (correct) return;
+              (o === data.targetCount ? playCorrect : playWrong)();
+              setPicked(o);
+            }}
           >
             {o}
           </button>

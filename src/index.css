@@ -65,6 +65,10 @@ body{margin:0;}
 .switch-btn{position:absolute;top:0;right:0;background:#fff;border:none;border-radius:14px;
   padding:8px 12px;font-size:13px;font-weight:800;color:var(--c-purple);cursor:pointer;
   box-shadow:var(--shadow);font-family:'Nunito';}
+.sound-toggle{position:absolute;top:0;left:0;width:44px;height:44px;border-radius:50%;
+  background:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;transition:transform .12s;}
+.sound-toggle:active{transform:scale(.9);}
 
 /* ---------- PICKER ---------- */
 .child-list{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:24px 0;}
@@ -320,7 +324,11 @@ body{margin:0;}
 .cg-wrong{background:#ffe0e0;border-color:var(--c-pink);animation:shake .4s;}
 
 /* tiếng Anh */
-.en-prompt{display:flex;justify-content:center;margin:8px 0 20px;}
+.en-prompt{display:flex;justify-content:center;align-items:center;gap:12px;margin:8px 0 20px;}
+.en-speak{flex:0 0 auto;width:56px;height:56px;border-radius:50%;border:none;
+  background:var(--c-blue);color:#fff;font-size:26px;cursor:pointer;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;transition:transform .12s;}
+.en-speak:active{transform:scale(.9);}
 .en-bigletter{font-family:'Baloo 2';font-size:96px;font-weight:800;color:var(--c-purple);
   background:#f8f4fc;border-radius:24px;width:150px;height:150px;display:flex;
   align-items:center;justify-content:center;box-shadow:var(--shadow);}

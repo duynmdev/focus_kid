@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle, EMOJI } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playCorrect, playWrong } from "../lib/sound";
 
 export default function FindDifferent({ onDone, level = 2 }) {
   const cfg = getLevelConfig("find", level);
@@ -45,7 +46,11 @@ export default function FindDifferent({ onDone, level = 2 }) {
             className={`find-cell ${
               picked === i ? (correct ? "find-right" : "find-wrong") : ""
             }`}
-            onClick={() => setPicked(i)}
+            onClick={() => {
+              if (correct) return;
+              (i === data.oddIndex ? playCorrect : playWrong)();
+              setPicked(i);
+            }}
           >
             {e}
           </button>

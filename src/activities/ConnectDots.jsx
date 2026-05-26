@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { rnd, shuffle } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playTap, playCorrect, playWrong } from "../lib/sound";
 
 export default function ConnectDots({ onDone, level = 1 }) {
   const cfg = getLevelConfig("dots", level);
@@ -33,6 +34,7 @@ export default function ConnectDots({ onDone, level = 1 }) {
 
   useEffect(() => {
     if (done) {
+      playCorrect();
       const t = setTimeout(() => onDone(100), 700);
       return () => clearTimeout(t);
     }
@@ -40,9 +42,11 @@ export default function ConnectDots({ onDone, level = 1 }) {
 
   const handle = (n) => {
     if (n === next) {
+      playTap();
       setNext((p) => p + 1);
       setWrong(null);
     } else if (n > next) {
+      playWrong();
       setWrong(n);
       setTimeout(() => setWrong(null), 500);
     }

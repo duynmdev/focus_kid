@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { generateMaze } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playTap, playCorrect } from "../lib/sound";
 
 export default function Maze({ onDone, level = 2 }) {
   const cfg = getLevelConfig("maze", level);
@@ -21,6 +22,7 @@ export default function Maze({ onDone, level = 2 }) {
 
   useEffect(() => {
     if (done) {
+      playCorrect();
       // điểm dựa trên số bước thừa so với đường ngắn nhất ước lượng
       const ideal = (size - 2) * 2;
       const score = Math.max(60, 100 - Math.max(0, moves - ideal) * 3);
@@ -31,14 +33,13 @@ export default function Maze({ onDone, level = 2 }) {
 
   const move = (dr, dc) => {
     if (done) return;
-    setPos((p) => {
-      const nr = p.r + dr;
-      const nc = p.c + dc;
-      if (nr < 0 || nc < 0 || nr >= size || nc >= size) return p;
-      if (grid[nr][nc] === 1) return p;
-      setMoves((m) => m + 1);
-      return { r: nr, c: nc };
-    });
+    const nr = pos.r + dr;
+    const nc = pos.c + dc;
+    if (nr < 0 || nc < 0 || nr >= size || nc >= size) return;
+    if (grid[nr][nc] === 1) return; // đụng tường
+    playTap();
+    setMoves((m) => m + 1);
+    setPos({ r: nr, c: nc });
   };
 
   useEffect(() => {

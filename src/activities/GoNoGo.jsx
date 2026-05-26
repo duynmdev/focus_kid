@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLevelConfig } from "../lib/levels";
+import { playCorrect, playWrong } from "../lib/sound";
 
 /* Đừng bấm nhầm (Go/No-Go): bấm khi thấy con THỎ 🐰, NHỊN khi thấy con MÈO 🐱.
    Rèn khả năng ức chế / kìm bốc đồng. */
@@ -47,7 +48,8 @@ export default function GoNoGo({ onDone, level = 1 }) {
 
   const registerResult = (correct, kind) => {
     setScore((s) => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-    if (kind === "good-nogo") return; // không hiện gì khi nhịn đúng (đỡ rối)
+    if (kind === "good-nogo") return; // không hiện/kêu gì khi nhịn đúng (đỡ rối)
+    (correct ? playCorrect : playWrong)();
     setFeedback(correct ? "good" : "bad");
   };
 

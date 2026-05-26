@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { shuffle, EMOJI } from "../lib/game";
 import { getLevelConfig } from "../lib/levels";
+import { playTap, playCorrect, playWrong } from "../lib/sound";
 
 /* Nhớ rồi tìm: xem N hình trong vài giây, rồi chọn lại đúng các hình đó
    giữa nhiều lựa chọn. Rèn trí nhớ làm việc. */
@@ -32,6 +33,7 @@ export default function MemoryFind({ onDone, level = 1 }) {
 
   const toggle = (emoji) => {
     if (phase !== "recall") return;
+    playTap();
     setPicked((prev) =>
       prev.includes(emoji) ? prev.filter((e) => e !== emoji) : [...prev, emoji]
     );
@@ -53,6 +55,7 @@ export default function MemoryFind({ onDone, level = 1 }) {
       0,
       Math.round((correct / target.size) * 100 - wrong * 20)
     );
+    (score >= 50 ? playCorrect : playWrong)();
     setPhase("done");
     setTimeout(() => onDone(score), 800);
   };
