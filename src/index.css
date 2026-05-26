@@ -153,7 +153,7 @@ body{margin:0;}
 .sess-count{font-family:'Baloo 2';font-weight:800;font-size:18px;color:#8a7a95;flex-shrink:0;}
 
 .task-card{background:var(--c-card);border-radius:28px;padding:24px;box-shadow:var(--shadow-lg);
-  border:4px solid #fff;min-height:60vh;}
+  border:4px solid #fff;min-height:60vh;position:relative;}
 .task-head{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px;}
 .task-icon{font-size:38px;}
 .task-title{font-family:'Baloo 2';font-size:28px;font-weight:800;color:var(--c-purple);}
@@ -415,3 +415,43 @@ body{margin:0;}
 @keyframes starGlow{0%{transform:scale(.8);}50%{transform:scale(1.25);}100%{transform:scale(1.1);}}
 .rs-good{filter:none;transform:scale(1.2);}
 .rs-early{filter:grayscale(0) hue-rotate(-40deg);animation:shake .3s;}
+
+/* ---------- Tập thử / Đếm ngược ---------- */
+.practice-tag{color:var(--c-purple);background:#f3ecff;border-radius:14px;display:inline-block;
+  padding:4px 14px;margin:0 auto 16px;}
+.countdown-wrap{text-align:center;padding:30px 0;}
+.countdown-num{font-family:'Baloo 2';font-size:120px;font-weight:800;color:var(--c-accent);
+  line-height:1;margin-top:10px;animation:countPop .8s ease;}
+@keyframes countPop{0%{transform:scale(.3);opacity:0;}40%{transform:scale(1.15);opacity:1;}
+  100%{transform:scale(1);opacity:.85;}}
+
+/* ---------- Tạm dừng ---------- */
+.sess-control-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.sess-control-row .gng-progress{margin-bottom:0;}
+.pause-btn{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:none;background:#fff;
+  font-size:18px;cursor:pointer;box-shadow:var(--shadow);}
+.pause-overlay{position:absolute;inset:0;background:rgba(58,43,77,.55);border-radius:28px;
+  display:flex;align-items:center;justify-content:center;z-index:20;}
+.pause-box{background:#fff;border-radius:24px;padding:28px 26px;text-align:center;
+  box-shadow:var(--shadow-lg);}
+.pause-title{font-family:'Baloo 2';font-size:24px;font-weight:800;color:var(--c-purple);
+  margin-bottom:16px;}
+
+/* ---------- Xác nhận thoát ---------- */
+.confirm-overlay{position:fixed;inset:0;background:rgba(58,43,77,.5);z-index:60;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.confirm-box{background:#fff;border-radius:24px;padding:26px;max-width:340px;width:100%;
+  text-align:center;box-shadow:var(--shadow-lg);}
+.confirm-msg{font-family:'Baloo 2';font-size:20px;font-weight:800;color:var(--c-ink);
+  line-height:1.5;margin-bottom:20px;}
+.confirm-actions{display:flex;flex-direction:column;gap:10px;}
+
+/* ---------- Confetti ---------- */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50;}
+.confetti-piece{position:absolute;top:-24px;border-radius:3px;opacity:0;
+  animation-name:confetti-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;}
+.confetti-piece.ce-emoji{font-size:22px;border-radius:0;}
+@keyframes confetti-fall{
+  0%{transform:translateY(-24px) rotate(0);opacity:1;}
+  100%{transform:translateY(104vh) rotate(var(--rot));opacity:.9;}
+}

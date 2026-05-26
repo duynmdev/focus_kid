@@ -95,7 +95,8 @@ export const LEVELS = {
   gonogo: {
     maxLevel: 4,
     levels: {
-      1: { label: "Chậm rãi", rounds: 10, intervalMs: 1800, noGoRate: 0.3, std: "Ức chế (Go/No-Go)" },
+      // NOTE: số tốc độ cấp 1 làm mềm cho bé mới; xem lại sau khi test bé thật.
+      1: { label: "Chậm rãi", rounds: 10, intervalMs: 2000, noGoRate: 0.3, std: "Ức chế (Go/No-Go)" },
       2: { label: "Vừa phải", rounds: 12, intervalMs: 1500, noGoRate: 0.35, std: "Ức chế (Go/No-Go)" },
       3: { label: "Nhanh", rounds: 14, intervalMs: 1200, noGoRate: 0.4, std: "Ức chế (Go/No-Go)" },
       4: { label: "Rất nhanh", rounds: 16, intervalMs: 1000, noGoRate: 0.45, std: "Ức chế (Go/No-Go)" },
@@ -117,7 +118,8 @@ export const LEVELS = {
   rhythm: {
     maxLevel: 4,
     levels: {
-      1: { label: "8 nhịp", taps: 8, intervalMs: 1400, std: "Chú ý duy trì" },
+      // NOTE: tốc độ cấp 1 làm mềm cho bé mới; xem lại sau khi test bé thật.
+      1: { label: "8 nhịp", taps: 8, intervalMs: 1600, std: "Chú ý duy trì" },
       2: { label: "12 nhịp", taps: 12, intervalMs: 1200, std: "Chú ý duy trì" },
       3: { label: "16 nhịp", taps: 16, intervalMs: 1100, std: "Chú ý duy trì" },
       4: { label: "20 nhịp", taps: 20, intervalMs: 1000, std: "Chú ý duy trì" },

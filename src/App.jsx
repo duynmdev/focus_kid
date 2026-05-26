@@ -28,6 +28,7 @@ import {
   playLevelUp,
 } from "./lib/sound";
 
+import Confetti from "./components/Confetti";
 import ConnectDots from "./activities/ConnectDots";
 import Maze from "./activities/Maze";
 import CountSort from "./activities/CountSort";
@@ -498,10 +499,29 @@ function Session({ session, step, levels, onExit, onDone }) {
   const cur = session[step];
   const ActivityComp = cur.type.Comp;
   const level = levels[cur.typeKey] || 1;
+  const [confirmExit, setConfirmExit] = useState(false);
   return (
     <div className="screen session">
+      {confirmExit && (
+        <div className="confirm-overlay" onClick={() => setConfirmExit(false)}>
+          <div className="confirm-box" onClick={(e) => e.stopPropagation()}>
+            <p className="confirm-msg">
+              Thoát buổi học? 🤔<br />
+              Tiến trình buổi này sẽ không được lưu.
+            </p>
+            <div className="confirm-actions">
+              <button className="big-play small" onClick={() => setConfirmExit(false)}>
+                Tiếp tục học
+              </button>
+              <button className="ghost-btn" onClick={() => { playTap(); onExit(); }}>
+                Thoát
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="sess-top">
-        <button className="back-btn" onClick={onExit}>✕</button>
+        <button className="back-btn" onClick={() => { playTap(); setConfirmExit(true); }}>✕</button>
         <div className="progress-track">
           {session.map((_, i) => (
             <span
@@ -529,18 +549,26 @@ function Session({ session, step, levels, onExit, onDone }) {
 
 /* ============================================================ Result */
 function Result({ result, childName, earnedBadges, levelUps, onAgain, onHome }) {
+  const [showConfetti, setShowConfetti] = useState(true);
+
   // âm thanh khi vào màn kết quả: giai điệu hoàn thành + tiếng sao + fanfare lên cấp
   useEffect(() => {
     playComplete();
     playStar(result.stars);
-    if (levelUps.length > 0) {
-      const t = setTimeout(() => playLevelUp(), 1000);
-      return () => clearTimeout(t);
-    }
+    const cf = setTimeout(() => setShowConfetti(false), 2800); // tự gỡ confetti
+    const lv =
+      levelUps.length > 0 ? setTimeout(() => playLevelUp(), 1000) : null;
+    return () => {
+      clearTimeout(cf);
+      if (lv) clearTimeout(lv);
+    };
   }, []);
 
   return (
     <div className="screen result">
+      {showConfetti && (
+        <Confetti count={result.stars === 3 ? 64 : 40} emoji={result.stars === 3} />
+      )}
       <div className="result-card">
         <h2 className="result-title">Hoàn thành buổi học! 🎉</h2>
         <div className="stars-row">
